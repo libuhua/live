@@ -8,3 +8,8 @@
 直播端:Laravel框架
 微信观看端:Yaf框架
 服务端: PHP源码
+
+文件说明:
+1：wx_live微信观看直播端，功能：微信语音聊天，微信定位，直播间中定位
+2：index.blade.php为直播端 使用的是laravel框架由于控制器、模型中并没有什么重要代码就没有上传!
+3: wx_zhibo_server.php 核心代码 swoole生成的websocket服务端进行视频的转发
