@@ -1,0 +1,287 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>主播页面</title>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    <style>
+        * {
+            -webkit-touch-callout:none;
+            -webkit-user-select:none;
+            -khtml-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            user-select:none;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%;height: 40%">
+    <!--视频区-->
+    <img id="receiver" style="width:100%;height:100%;"/>
+    <audio src="" id="audiosrc"></audio>
+
+</div>
+<div style="width: 100%;height: 40%">
+    <div id="voice">
+        <div style="width: 60%;margin-left: 20%;float: left;">
+            管理员:<button class="weui_btn weui_btn_default play" server="ZLlZiW0J6eWG_rvEjC9O1TLqT6Xs1s4v2JS4_ggjDpCQAYt1MnrlCNfyerYKvxH5"><i class="weui_icon_waiting_circle"></i></button>
+            <br><a href="javascript:void(0)" class="translate" server="ZLlZiW0J6eWG_rvEjC9O1TLqT6Xs1s4v2JS4_ggjDpCQAYt1MnrlCNfyerYKvxH5">翻译</a>
+        </div>
+        <div style="width: 60%;margin-left: 20%;float: left;">
+<!--            var latitude = 40.0401;-->
+<!--            var longitude = 116.29369;-->
+<!--            var name = "123";-->
+            管理员:<button class="weui_btn weui_btn_default show" latitude="40.0401" longitude="116.29369" mapname="管理员">查看位置</button>
+        </div>
+    </div>
+    <!--聊天窗口-->
+</div>
+<input type="hidden" value="<?php echo $openid ?>" id="openid">
+<div style="width: 100%;height: 20%">
+    <button class="weui_btn weui_btn_primary" id="start" status="0">开始录制</button>
+    <button class="weui_btn weui_btn_primary gets">发送位置</button>
+<!--    <button class="weui_btn weui_btn_primary" id="stop">停止录制</button>-->
+</div>
+<script>
+    //receiver_socket  websocket服务
+    var receiver_socket = new WebSocket("ws://47.94.222.95:9502");
+    var image = document.getElementById('receiver');
+    var audiosrc = document.getElementById('audiosrc');
+
+    //缓冲视频 以及音频
+    receiver_socket.onmessage = function(data)
+    {
+        data = data.data;
+        data = eval('(' + data + ')');
+        if(data['type'] == 'camera'){
+            image.src=data['data'];
+//            console.log(data['audio']);
+            audio(data['audio']);
+        }
+        //关闭通道
+        if(data['type'] == 'close'){
+            alert("您观看的主播已关闭直播~将会跳转到主播列表");
+//            window.history.back(-1);
+            window.location.href="http://yafwx.litaotaoa.com/live/list";
+        }
+        if(data['type'] == 'voice'){
+//            console.log(data);
+            var voice = data['data'];
+            var openid = data['openid'];
+//            alert(openid);
+            $.ajax({
+                url:"http://yafwx.litaotaoa.com/rediss/get",
+                data:"openid="+openid,
+//                dataType:"json",
+                success:function (msgs) {
+//                    alert(openid);
+//                    alert(msg);
+//                      alert(msgs);
+                    str = '<div style="width: 60%;margin-left: 20%;float: left;">'+msgs+':<button class="weui_btn weui_btn_default play"server="'+voice+'"><i class="weui_icon_waiting_circle"></i></button><br><a href="javascript:void(0)" class="translate" server="ZLlZiW0J6eWG_rvEjC9O1TLqT6Xs1s4v2JS4_ggjDpCQAYt1MnrlCNfyerYKvxH5">翻译</a></div>';
+                    $("#voice").after(str);
+                }
+            });
+//            console.log(voice
+        }
+        if(data['type'] == 'map'){
+            var openid = data['openid'];
+            var latitude = data['latitude'];
+            var longitude = data['longitude'];
+//            var name = data[].'位置';
+            $.ajax({
+                url:"http://yafwx.litaotaoa.com/rediss/get",
+                data:"openid="+openid,
+//                dataType:"json",
+                success:function (msgs) {
+                      //msgs =>对方的名称
+                    str = '<div style="width: 60%;margin-left: 20%;float: left;">'+msgs+':<button class="weui_btn weui_btn_default show" latitude="'+latitude+'"longitude="'+longitude+'" mapname="'+msgs+'的位置">查看位置</button></div>';
+                    $("#voice").after(str);
+                }
+            });
+        }
+    }
+    function audio(a) {
+        au = _base64ToArrayBuffer(a);
+        audioCtx = new (window.AudioContext || window.webkitAudioContext);
+        myBuffer = audioCtx.createBuffer(1, 2048, audioCtx.sampleRate),
+            source = audioCtx.createBufferSource(),
+            recorder = audioCtx.createScriptProcessor(2048, 1, 1);
+        source.connect(recorder);
+        recorder.connect(audioCtx.destination);
+        recorder.onaudioprocess = function(ev){
+            //播放audioChuncks里面真正的二进制数据
+            ev.outputBuffer.copyToChannel(new Float32Array(au), 0, 0);
+        };
+    }
+    function _base64ToArrayBuffer(base64) {
+//        console.log(base64);
+        var len = base64.length;
+        var bytes = new Uint8Array( len );
+        for (var i = 0; i < len; i++)        {
+            bytes[i] = base64.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+    receiver_socket.onopen = function()
+    {
+//        var openid = $("#openid").val();
+        receiver_socket.send(<?php echo "'". json_encode(array('token'=>'look','lookid'=>$look,'openid'=>$openid))."'" ?>);
+    }
+    //微信调用JS-SDK
+    wx.config({
+        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: 'wx462e524f53293c42', // 必填，公众号的唯一标识
+        timestamp: "<?php echo $jssdk['timestamp'] ?>", // 必填，生成签名的时间戳
+        nonceStr: "<?php echo $jssdk['nonceStr'] ?>", // 必填，生成签名的随机串
+        signature: "<?php echo $jssdk['signature'] ?>",// 必填，签名，见附录1
+        jsApiList: [
+            'onMenuShareTimeline',
+            //录音
+            'startRecord',
+            'stopRecord',
+            'uploadVoice',
+            'downloadVoice',
+            'playVoice',
+            'translateVoice',
+            'openLocation',
+            'getLocation'
+        ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+    $(document).on("click",".gets",function () {
+        wx.getLocation({
+            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                var speed = res.speed; // 速度，以米/每秒计
+                var accuracy = res.accuracy; // 位置精度
+                var openid = $("#openid").val();
+                receiver_socket.send('{"token":"map","latitude":"'+latitude+'","longitude":"'+longitude+'","openid":"'+openid+'", "uid":"<?php echo $look ?>"}');
+            }
+        });
+    });
+    $(document).on("click",".show",function () {
+        var latitude = parseFloat($(this).attr('latitude'));
+        var longitude = parseFloat($(this).attr('longitude'));
+        var name = $(this).attr('mapname');
+//        alert(typeof(latitude));
+        wx.openLocation({
+            latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
+            longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
+            name: name, // 位置名
+            address: '', // 地址详情说明
+//            scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
+            infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+        });
+    });
+    //点击播放按钮获取
+    $(document).on("click",".play",function () {
+        var thiss = $(this);
+        var server = thiss.attr("server");
+        thiss.removeClass("weui_btn_primary");
+        thiss.addClass("weui_btn_default");
+        thiss.html('<i class="weui_icon_success"></i>');
+        wx.downloadVoice({
+
+            //下载
+            serverId: server, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (res) {
+                var localId = res.localId; // 返回音频的本地ID
+                //自动下载并播放
+                wx.playVoice({
+                    localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+                });
+            }
+        });
+    });
+    //智能识别语音(入口 需要本地id)
+    $(document).on("click",".translate",function () {
+        var thisobj = $(this);
+        var server = $(this).attr("server");
+        wx.downloadVoice({
+
+            //下载
+            serverId: server, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (res) {
+                var localId = res.localId; // 返回音频的本地ID
+                //自动下载并播放
+                wx.translateVoice({
+                    localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                    success: function (ress) {
+                        thisobj.removeClass('translate');
+                        thisobj.after('&nbsp;&nbsp;&nbsp;<span>'+ress.translateResult+'</span>');
+//                        thisobj.innerHTML("ress.translateResult");
+//                        alert(ress.translateResult); // 语音识别的结果
+                    }
+                });
+            }
+        });
+    });
+    wx.ready(function () {
+        wx.onMenuShareTimeline({
+            title: '直播啦', // 分享标题
+            link: 'http://www.baidu.com', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: '', // 分享图标
+            success: function () {
+                // 用户确认分享后执行的回调函数
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+            }
+        });
+    });
+    wx.error(function(res){
+        // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+    });
+    $('#start').on('click',function () {
+        status = $(this).attr('status');
+        if(status == 0){
+            wx.startRecord();
+            $(this).attr("status","1");
+            $(this).html("发送");
+        }else{
+            $(this).html("开始录制");
+            $(this).attr("status","0");
+
+            wx.stopRecord({
+                success: function (res) {
+                    var localId = res.localId;
+//                  alert(localId);
+                    upload(localId);
+                }
+            });
+        }
+    });
+    function upload(localId) {
+        wx.uploadVoice({
+            localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (res) {
+                var serverId = res.serverId; // 返回音频的服务器端ID
+//                uid = $("#uid").val();
+                var openid = $("#openid").val();
+                receiver_socket.send('{"token":"record","serverId":"'+serverId+'","openid":"'+openid+'", "uid":"<?php echo $look ?>"}');
+//                str = '<div style="width: 60%;margin-left: 20%;float: left;">1号用户:<button class="weui_btn weui_btn_default play" server="'+serverId+'"><i class="weui_icon_waiting_circle"></i></button></div>';
+//                $("#voice").after(str);
+//                alert(serverId);
+            }
+        });
+    }
+
+
+
+//    "ZLlZiW0J6eWG_rvEjC9O1TLqT6Xs1s4v2JS4_ggjDpCQAYt1MnrlCNfyerYKvxH5"
+</script>
+
+<script type="text/javascript" charset="utf-8">
+
+
+</script>
+</body>
+</html>

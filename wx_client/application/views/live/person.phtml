@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/amazeui.min.css">
+    <link rel="stylesheet" href="/css/wap.css">
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+
+    <title>个人中心</title>
+</head>
+<body style="background:#ececec">
+<!--    底部导航栏-->
+    <div class="weui_tab" style="margin-top: 4%">
+        <div class="weui_tab_bd"></div>
+        <div class="weui_tabbar">
+            <a href="http://yafwx.litaotaoa.com/live/list" class="weui_tabbar_item">
+                <div class="weui_tabbar_icon">
+                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508397449319&di=a7694fa687618ac0d0c7a4df3c36f622&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0183b855420c990000019ae98b9ce8.jpg%40900w_1l_2o_100sh.jpg" alt="">
+                </div>
+                <p class="weui_tabbar_label">直播列表</p>
+            </a>
+            <a href="http://yafwx.litaotaoa.com/live/video" class="weui_tabbar_item">
+                <div class="weui_tabbar_icon">
+                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508995311&di=c3f6bc4a5bf016f9cb528c9486ed4f35&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01541b56ef6db832f875a9441f99ff.png" alt="">
+                </div>
+                <p class="weui_tabbar_label">往期视频</p>
+            </a>
+            <a href="http://yafwx.litaotaoa.com/live/person" class="weui_tabbar_item weui_bar_item_on">
+                <div class="weui_tabbar_icon">
+                    <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508400465869&di=55819a46b36097d151064f762f1c7b40&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F019de057c008ff0000012e7e2157c8.jpg" alt="">
+                </div>
+                <p class="weui_tabbar_label">个人中心</p>
+            </a>
+        </div>
+    </div>
+
+            <div class="pet_grzx_nr">
+                <div class="pet_grzx_ico">
+                    <img src="/img/qq1.png" alt="">
+                </div>
+                <div class="pet_grzx_name">AamazeUI</div>
+                <div class="pet_grzx_map">美国</div>
+                <div class="pet_grzx_num_font">
+                    我坐在水屋下边的平台看着大海，吹着海风，真的是太喜欢了。夜晚有好多小白鲨鱼，好多种鱼。
+                </div>
+                <div class="pet_grzx_num">
+                    <span>653<i>喜欢</i></span>
+                    <span>234<i>关注</i></span>
+                    <span>34<i>文章</i></span>
+                </div>
+
+            </div>
+
+
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/amazeui.min.js"></script>
+            <script>
+                $(function(){
+
+                    // 动态计算新闻列表文字样式
+                    auto_resize();
+                    $(window).resize(function() {
+                        auto_resize();
+                    });
+                    $('.am-list-thumb img').load(function(){
+                        auto_resize();
+                    });
+                    $('.pet_article_like li:last-child').css('border','none');
+                    function auto_resize(){
+                        $('.pet_list_one_nr').height($('.pet_list_one_img').height());
+                        // alert($('.pet_list_one_nr').height());
+                    }
+                    $('.pet_article_user').on('click',function(){
+                        if($('.pet_article_user_info_tab').hasClass('pet_article_user_info_tab_show')){
+                            $('.pet_article_user_info_tab').removeClass('pet_article_user_info_tab_show').addClass('pet_article_user_info_tab_cloes');
+                        }else{
+                            $('.pet_article_user_info_tab').removeClass('pet_article_user_info_tab_cloes').addClass('pet_article_user_info_tab_show');
+                        }
+                    });
+
+                    $('.pet_head_gd_ico').on('click',function(){
+                        $('.pet_more_list').addClass('pet_more_list_show');
+                    });
+                    $('.pet_more_close').on('click',function(){
+                        $('.pet_more_list').removeClass('pet_more_list_show');
+                    });
+                });
+
+            </script>
+</body>
+</html>

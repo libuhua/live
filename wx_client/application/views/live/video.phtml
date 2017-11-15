@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>草料直播</title>
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+</head>
+<body ontouchstart>
+
+<!--    底部导航栏-->
+<div class="weui_tab" style="margin-bottom: 2%;">
+    <div class="weui_tab_bd"></div>
+
+    <div class="weui_tabbar">
+        <a href="http://yafwx.litaotaoa.com/live/list" class="weui_tabbar_item">
+            <div class="weui_tabbar_icon">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508397449319&di=a7694fa687618ac0d0c7a4df3c36f622&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0183b855420c990000019ae98b9ce8.jpg%40900w_1l_2o_100sh.jpg" alt="">
+            </div>
+            <p class="weui_tabbar_label">直播列表</p>
+        </a>
+        <a href="http://yafwx.litaotaoa.com/live/video" class="weui_tabbar_item weui_bar_item_on">
+            <div class="weui_tabbar_icon">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508995311&di=c3f6bc4a5bf016f9cb528c9486ed4f35&imgtype=jpg&er=1&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01541b56ef6db832f875a9441f99ff.png" alt="">
+            </div>
+            <p class="weui_tabbar_label">往期视频</p>
+        </a>
+        <a href="http://yafwx.litaotaoa.com/live/person" class="weui_tabbar_item">
+            <div class="weui_tabbar_icon">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1508400465869&di=55819a46b36097d151064f762f1c7b40&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F019de057c008ff0000012e7e2157c8.jpg" alt="">
+            </div>
+            <p class="weui_tabbar_label">个人中心</p>
+        </a>
+    </div>
+</div>
+
+
+<!--    视频列表   -->
+<div class="weui-gallery">
+    <!--        <span class="weui-gallery__img" style="background-image: url();"></span>-->
+    <?php foreach ($data as $value){ ?>
+        <div style="width: 80%;height: 15%;margin-left: 10%;margin-top: 2%">
+            <img src="http://img05.tooopen.com/images/20150820/tooopen_sy_139205349641.jpg" alt="" width="100%;" height="100%;">
+            <div class="weui-gallery__opr">
+                <a href="http://47.94.252.238/video.php?id=<?php echo $value[1] ?>" class="weui-gallery__del">
+                    <i class="weui-icon-delete weui-icon_gallery-delete"><?php echo $value[0] ?></i>
+                </a>
+            </div>
+        </div>
+    <?php }?>
+
+</div>
+</body>
+</html>
